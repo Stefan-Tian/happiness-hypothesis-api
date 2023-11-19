@@ -3,6 +3,9 @@ require 'logger'
 require 'matrix'
 require 'polars-df'
 
+# Service class for interacting with OpenAI API.
+# Provides functionality for loading embeddings, generating answers based on context,
+# and handling question processing with OpenAI's models.
 class OpenaiService
   CHAT_COMPLETION_MODEL = "gpt-3.5-turbo"
   EMBEDDING_MODEL = "text-embedding-ada-002"
@@ -22,6 +25,9 @@ class OpenaiService
     end
   end
 
+  # Loads embeddings from a specified CSV file.
+  # @param fname [String] File name of the CSV containing embeddings.
+  # @return [Hash] Loaded embeddings indexed by document titles.
   def load_embeddings(fname)
     @logger.info("Loading embeddings from #{fname}")
 
@@ -42,6 +48,11 @@ class OpenaiService
     nil
   end
 
+  # Generates an answer to a given query using the OpenAI API, based on the context provided by embeddings.
+  # @param query [String] The user's query.
+  # @param page_df [Polars::DataFrame] Dataframe containing document content.
+  # @param context_embeddings [Hash] Embeddings of the document content.
+  # @return [Array] The generated answer and the context used for the answer.
   def answer_query_with_context(query, page_df, context_embeddings)
     @logger.info("Generating answer for query: #{query}")
     prompt, context = construct_prompt(query, page_df, context_embeddings)
@@ -60,6 +71,11 @@ class OpenaiService
     return nil
   end
 
+  # Constructs the prompt to be sent to OpenAI API for generating an answer.
+  # @param question [String] The user's question.
+  # @param page_df [Polars::DataFrame] Dataframe containing document content.
+  # @param context_embeddings [Hash] Embeddings of the document content.
+  # @return [Array] The constructed prompt and the context sections used.
   def construct_prompt(question, page_df, context_embeddings)
     most_relevant_sections = order_document_sections_by_query_similarity(question, context_embeddings)
     chosen_sections = construct_chosen_sections(most_relevant_sections, page_df)
