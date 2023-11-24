@@ -10,14 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_11_19_133335) do
+ActiveRecord::Schema[7.1].define(version: 20_231_119_133_335) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "questions", force: :cascade do |t|
     t.string "question", limit: 140
     t.text "context"
-    t.text "answer", limit: 1000
+    t.text "answer"
     t.integer "ask_count", default: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
-
 end
